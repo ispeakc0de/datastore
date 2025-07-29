@@ -18,3 +18,19 @@ spec:
       containers:
       - image: nginx
         name: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: application1
+  name: application1-service
+spec:
+  ports:
+  - name: http
+    port: 8000
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: app1
+  type: ClusterIP
