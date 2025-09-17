@@ -1,0 +1,15 @@
+# Usernames and passwords required to connect to Prometheus.
+# Passwords are hashed with bcrypt: https://github.com/prometheus/exporter-toolkit/blob/master/docs/web-configuration.md#about-bcrypt
+apiVersion: v1
+data:
+  web-config.yml: |
+    tls_server_config:
+      cert_file: /etc/cert/example.com.crt
+      key_file: /etc/key/example.com.key
+kind: ConfigMap
+metadata:
+  name: prometheus-configmap-web
+
+
+    #basic_auth_users:
+#      admin: $2a$12$DcoZnGFjysgLpxZ28FBwVOuMxT46iHSvmSOGULupHyHy.C4AV876W

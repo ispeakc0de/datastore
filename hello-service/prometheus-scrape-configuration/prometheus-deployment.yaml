@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus-deployment
-  namespace: monitoring
 spec:
   replicas: 1
   selector:
@@ -15,31 +14,48 @@ spec:
       name: prometheus
     spec:
       containers:
-      - args:
-        - -storage.local.retention=360h
-        - -storage.local.memory-chunks=1048576
-        - -config.file=/etc/prometheus/prometheus.yml
-        - -alertmanager.url=http://alertmanager:9093
-        image: prom/prometheus:v1.5.2
-        imagePullPolicy: IfNotPresent
-        name: prometheus
-        ports:
-        - containerPort: 9090
-          name: web
-          protocol: TCP
-        volumeMounts:
-        - mountPath: /etc/prometheus
-          name: config-volume
-        - mountPath: /etc/prometheus-rules
-          name: alertrules-volume
+        - args:
+            - --web.enable-lifecycle
+            - --web.config.file=/etc/prometheus1/web-config.yml
+            - --config.file=/etc/prometheus2/prometheus.yml
+          image: prom/prometheus:latest
+          imagePullPolicy: IfNotPresent
+          name: prometheus
+          ports:
+            - containerPort: 9090
+              name: web
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/prometheus2
+              name: config-volume
+            - mountPath: /etc/prometheus-rules
+              name: alertrules-volume
+            - mountPath: /etc/prometheus1
+              name: config-volume-2
+            - mountPath: /etc/cert
+              name: config-volume-3
+            - mountPath: /etc/key
+              name: config-volume-4
       serviceAccount: prometheus
       serviceAccountName: prometheus
       volumes:
-      - configMap:
-          defaultMode: 420
-          name: prometheus-configmap
-        name: config-volume
-      - configMap:
-          defaultMode: 420
-          name: prometheus-alertrules
-        name: alertrules-volume
+        - configMap:
+            defaultMode: 420
+            name: config-volume-crt
+          name: config-volume-3
+        - configMap:
+            defaultMode: 420
+            name: config-volume-key
+          name: config-volume-4
+        - configMap:
+            defaultMode: 420
+            name: prometheus-configmap-web
+          name: config-volume-2
+        - configMap:
+            defaultMode: 420
+            name: prometheus-configmap
+          name: config-volume
+        - configMap:
+            defaultMode: 420
+            name: prometheus-alertrules
+          name: alertrules-volume
